@@ -3,10 +3,10 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import * as faker from 'faker';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { User } from './../src/modules/user/domain/entities/user.entity';
-import { FindUserByNameRequest } from './../src/modules/user/dto/user.request.dto';
-import { AppModule } from './../src/app.module';
-import { UserRepository } from 'src/modules/user/database/user.repository';
+import { User } from 'src/modules/user/domain/entities/user.entity';
+import { UserRepository } from 'src/modules/user/user.repository';
+import { AppModule } from 'src/app.module';
+import { FindUserByNameRequest } from 'src/modules/user/dto/user.request.dto';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;

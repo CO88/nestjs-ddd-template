@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
-import { UserRepository } from '../database/user.repository';
-import { User } from '../domain/entities/user.entity';
+import { User } from './domain/entities/user.entity';
+import { UserRepository } from './user.repository';
 import { UserService } from './user.service';
 
 describe('UserService', () => {
