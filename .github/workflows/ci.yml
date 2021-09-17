@@ -33,17 +33,17 @@ jobs:
         run: echo "::set-output name=hash::${{ hashFiles('yarn.lock') }}"
 
       - name: Check dependency cache
-        uses: actions/cache@2
-        id: cache-dependencies
+        uses: actions/cache@v2
+        id: cache_dependencies
         with:
           path: ${{ env.CACHED_DEPENDENCY_PATHS }}
           key: ${{ steps.lockfile_hash.outputs.hash }}
       
       - name: Install dependencies
-        if: steps.cache_dependenceis.outputs.cache-hit != 'true'
-        uses: yarn 
+        if: steps.cache_dependencies.outputs.cache-hit != 'true'
+        run: yarn 
     outputs:
-      dependency_cache_key: ${{ step.lockfile_hash.outputs.hash }}
+      dependency_cache_key: ${{ steps.lockfile_hash.outputs.hash }}
 
 
   # build:
