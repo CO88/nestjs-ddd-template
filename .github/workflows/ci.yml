@@ -26,7 +26,7 @@ jobs:
       - name: Use Nodejs
         uses: actions/setup-node@v2
         with:
-          node-version:'16'
+          node-version: '16'
 
       - name: Cache yarn dependencies
         uses: actions/cache@1
