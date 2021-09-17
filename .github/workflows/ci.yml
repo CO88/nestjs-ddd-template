@@ -29,7 +29,7 @@ jobs:
           node-version: '16'
 
       - name: Cache yarn dependencies
-        uses: actions/cache@1
+        uses: actions/cache@2
         id: yarn-cache
         with:
           path: node_modules
