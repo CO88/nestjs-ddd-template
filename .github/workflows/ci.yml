@@ -10,46 +10,67 @@ on:
   pull_request:
     branches: [ master ]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+env:
+  CACHED_DEPENDENCY_PATHS: ${{ github.workspace }}/node_modules
+  BUILD_CACHE_KEY: ${{ github.sha }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  init:
+    name: Install Dependencies
     runs-on: ubuntu-latest
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
-      - name: Use Nodejs
+      - name: Check out current commit (${{ github.sha }})
+        uses: actions/checkout@v2
+      
+      - name: Set up Nodejs
         uses: actions/setup-node@v2
         with:
           node-version: '16'
+      
+      - name: dependency cache key
+        id: lockfile_hash
+        run: echo "::set-output name=hash::${{ hashFiles('yarn.lock') }}"
 
-      - name: Cache yarn dependencies
+      - name: Check dependency cache
         uses: actions/cache@2
-        id: yarn-cache
+        id: cache-dependencies
         with:
-          path: node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn
+          path: ${{ env.CACHED_DEPENDENCY_PATHS }}
+          key: ${{ steps.lockfile_hash.outputs.hash }}
+      
+      - name: Install dependencies
+        if: steps.cache_dependenceis.outputs.cache-hit != 'true'
+        uses: yarn 
+    outputs:
+      dependency_cache_key: ${{ step.lockfile_hash.outputs.hash }}
 
-      # Runs a set of commands using the runners shell
-      - name: yarn install
-        run: |
-          yarn install
-      - name: project build
-        run: |
-          yarn build
-      - name: unit test
-        run: |
-          yarn test
-      - name: e2e test
-        run: | 
-          yarn test:e2e
+
+  # build:
+  #   name: Build
+  #   needs: init
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - name: Use Nodejs
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: '16'
+  #     - name: Check dependency cache
+  #       uses: actions/cache@v2
+  #       with: 
+  #         path: ${{ env.CACHED_DEPENDENCY_PATHS }}
+  #         key: ${{ needs.init.outputs.dependency_cache_key }}
+  #     - name: Check build cache
+  #       uses: actions/cache@v2
+  #       id: cache_built_package
+  #       with:
+  #         path:
+  #         key:
+
+
+      
 
       # 중간에 실패한 경우 슬랙으로 알려줍니다.
       # GitHub 저장소나 조직의 Secrets 항목에 슬랙 Webhook URL을 등록해야 합니다.
