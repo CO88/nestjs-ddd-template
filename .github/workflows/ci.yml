@@ -41,9 +41,9 @@ jobs:
       
       - name: Install dependencies
         if: steps.cache_dependenceis.outputs.cache-hit != 'true'
-        uses: yarn 
+        run: yarn 
     outputs:
-      dependency_cache_key: ${{ step.lockfile_hash.outputs.hash }}
+      dependency_cache_key: ${{ steps.lockfile_hash.outputs.hash }}
 
 
   # build:
