@@ -12,6 +12,7 @@ on:
 
 env:
   CACHED_DEPENDENCY_PATHS: ${{ github.workspace }}/node_modules
+  CACHED_BUILD_PATHS: ${{ github.workspace }}/.dist
   BUILD_CACHE_KEY: ${{ github.sha }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -28,46 +29,54 @@ jobs:
         with:
           node-version: '16'
       
-      - name: dependency cache key
-        id: lockfile_hash
-        run: echo "::set-output name=hash::${{ hashFiles('yarn.lock') }}"
+      # - name: dependency cache key
+      #   id: lockfile_hash
+      #   run: echo "::set-output name=hash::${{ hashFiles('yarn.lock') }}"
 
       - name: Check dependency cache
         uses: actions/cache@v2
         id: cache_dependencies
         with:
           path: ${{ env.CACHED_DEPENDENCY_PATHS }}
-          key: ${{ steps.lockfile_hash.outputs.hash }}
+          # key: ${{ steps.lockfile_hash.outputs.hash }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       
       - name: Install dependencies
         if: steps.cache_dependencies.outputs.cache-hit != 'true'
         run: yarn 
-    outputs:
-      dependency_cache_key: ${{ steps.lockfile_hash.outputs.hash }}
+    # outputs:
+    #   dependency_cache_key: ${{ steps.lockfile_hash.outputs.hash }}
 
 
-  # build:
-  #   name: Build
-  #   needs: init
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
+  build:
+    name: Build
+    needs: init
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
 
-  #     - name: Use Nodejs
-  #       uses: actions/setup-node@v2
-  #       with:
-  #         node-version: '16'
-  #     - name: Check dependency cache
-  #       uses: actions/cache@v2
-  #       with: 
-  #         path: ${{ env.CACHED_DEPENDENCY_PATHS }}
-  #         key: ${{ needs.init.outputs.dependency_cache_key }}
-  #     - name: Check build cache
-  #       uses: actions/cache@v2
-  #       id: cache_built_package
-  #       with:
-  #         path:
-  #         key:
+      - name: Use Nodejs
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Check dependency cache
+        uses: actions/cache@v2
+        with: 
+          path: ${{ env.CACHED_DEPENDENCY_PATHS }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Check build cache
+        uses: actions/cache@v2
+        id: cache_built_package
+        with:
+          path: ${{ env.CACHED_BUILD_PATHS }}
+          key: ${{ env.BUILD_CACHE_KEY }}
+      - name: Build 
+        if: steps.cache_built_package.outputs.cache-hit != 'true'
+        run: yarn build
 
 
       
