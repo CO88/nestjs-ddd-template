@@ -1,20 +1,48 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import * as faker from 'faker';
+import { Repository } from 'typeorm';
+import { Coupon } from './domain/entities/coupon.entity';
+import { Point } from './domain/entities/point.entity';
 import { User } from './domain/entities/user.entity';
-import { UserRepository } from './user.repository';
+import { UserUpdateService } from './domain/user-update.service';
 import { UserService } from './user.service';
+
+const mockPostRepository = () => ({
+  save: jest.fn(),
+  find: jest.fn(),
+  findOne: jest.fn(),
+  softDelete: jest.fn(),
+});
+
+type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
 describe('UserService', () => {
   let userService: UserService;
-  let userRepository: UserRepository;
+  let userRepository: MockRepository<User>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserService, UserRepository],
+      providers: [
+        UserService,
+        {
+          provide: getRepositoryToken(User),
+          useValue: mockPostRepository(),
+        },
+        UserUpdateService,
+        {
+          provide: getRepositoryToken(Point),
+          useValue: mockPostRepository(),
+        },
+        {
+          provide: getRepositoryToken(Coupon),
+          useValue: mockPostRepository(),
+        },
+      ],
     }).compile();
 
     userService = module.get<UserService>(UserService);
-    userRepository = module.get<UserRepository>(UserRepository);
+    userRepository = module.get<MockRepository<User>>(getRepositoryToken(User));
   });
 
   describe('User 정보 get', () => {
@@ -28,21 +56,14 @@ describe('UserService', () => {
         name: name,
       });
 
-      // 유저를 db에서 가져온다. (mock, spyOn이용)
-      const repositoryFindOneSpy = jest
-        .spyOn(userRepository, 'findOne')
-        .mockResolvedValue(existingUser);
+      // 유저를 db에서 가져온다. (mock)
+      userRepository.findOne.mockReturnValue(existingUser);
 
       /**
        * service클래스에서 유저를 가져오는 메소드를 실행하여
        * 결과를 확인하고 같은지 확인한다.
        */
       const result = await userService.get(name);
-      expect(repositoryFindOneSpy).toHaveBeenCalledWith({
-        where: {
-          name: name,
-        },
-      });
       expect(result).toBe(existingUser);
     });
   });
