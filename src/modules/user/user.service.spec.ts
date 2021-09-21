@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as faker from 'faker';
-import { mockPostRepository, MockRepository } from 'src/util/test.util';
+import { mockPostRepository, MockRepository } from './../../util/test.util';
 import { Coupon } from './domain/entities/coupon.entity';
 import { Point } from './domain/entities/point.entity';
 import { User } from './domain/entities/user.entity';
