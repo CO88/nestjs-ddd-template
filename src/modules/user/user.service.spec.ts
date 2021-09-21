@@ -1,21 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as faker from 'faker';
-import { Repository } from 'typeorm';
+import { mockPostRepository, MockRepository } from 'src/util/test.util';
 import { Coupon } from './domain/entities/coupon.entity';
 import { Point } from './domain/entities/point.entity';
 import { User } from './domain/entities/user.entity';
 import { UserUpdateService } from './domain/user-update.service';
 import { UserService } from './user.service';
-
-const mockPostRepository = () => ({
-  save: jest.fn(),
-  find: jest.fn(),
-  findOne: jest.fn(),
-  softDelete: jest.fn(),
-});
-
-type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
 describe('UserService', () => {
   let userService: UserService;

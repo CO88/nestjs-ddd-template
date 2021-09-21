@@ -3,54 +3,58 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import * as faker from 'faker';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { User } from 'src/modules/user/domain/entities/user.entity';
-import { UserRepository } from 'src/modules/user/user.repository';
-import { AppModule } from 'src/app.module';
-import { FindUserByNameRequest } from 'src/modules/user/dto/user.request.dto';
+import { User } from './../src/modules/user/domain/entities/user.entity';
+import { FindUserByNameRequest } from './../src/modules/user/dto/user.request.dto';
+import { UserModule } from './../src/modules/user/user.module';
+import { Point } from './../src/modules/user/domain/entities/point.entity';
+import { Coupon } from './../src/modules/user/domain/entities/coupon.entity';
+import { mockPostRepository } from './../src/util/test.util';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
-
+  const userRepo = { findOne: jest.fn() };
   /**
    * 테스트전에 사전작업을 여기에서 진행합니다.
    */
   beforeEach(async () => {
-    const user = User.of({
-      id: faker.datatype.number(),
-      name: faker.lorem.word(),
-    });
-
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+    const moduleRef: TestingModule = await Test.createTestingModule({
+      imports: [UserModule],
     })
-      .overrideProvider(getRepositoryToken(UserRepository))
+      .overrideProvider(getRepositoryToken(User))
+      .useValue(userRepo)
+      // .useFactory({
+      //   factory: userRepo,
+      // })
+      .overrideProvider(getRepositoryToken(Point))
       .useFactory({
-        factory: () => ({
-          findOne: jest.fn(
-            () =>
-              new Promise((resolve) => {
-                resolve(user);
-              }),
-          ),
-        }),
+        factory: mockPostRepository,
+      })
+      .overrideProvider(getRepositoryToken(Coupon))
+      .useFactory({
+        factory: mockPostRepository,
       })
       .compile();
 
-    app = moduleFixture.createNestApplication();
+    app = moduleRef.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   describe('UserModule', () => {
     it('/user (GET)', () => {
       //request Dto를 사용하는 부분 깔끔하게 코드정리 할 필요가 있음
       const requestDto = new FindUserByNameRequest();
-      requestDto.name = 'test';
-
+      const name = faker.lorem.word();
+      requestDto.name = name;
+      const user = User.of({
+        id: faker.datatype.number(),
+        name: name,
+      });
+      userRepo.findOne.mockReturnValue(user);
       return request(app.getHttpServer())
         .get('/user')
         .query(requestDto)
