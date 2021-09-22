@@ -12,6 +12,7 @@ export class UserController {
   @Get()
   async get(@Query() { name }: FindUserByNameRequest): Promise<UserResponse> {
     const user = await this.userService.get(name);
+
     console.log('params : ', name);
     console.log('result : ', user);
     return new UserResponse(user);

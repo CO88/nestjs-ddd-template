@@ -12,7 +12,9 @@ import { mockPostRepository } from './../src/util/test.util';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
-  const userRepo = { findOne: jest.fn() };
+  const userRepo = mockPostRepository();
+  const pointRepo = mockPostRepository();
+  const couponRepo = mockPostRepository();
   /**
    * 테스트전에 사전작업을 여기에서 진행합니다.
    */
@@ -22,17 +24,10 @@ describe('AppController (e2e)', () => {
     })
       .overrideProvider(getRepositoryToken(User))
       .useValue(userRepo)
-      // .useFactory({
-      //   factory: userRepo,
-      // })
       .overrideProvider(getRepositoryToken(Point))
-      .useFactory({
-        factory: mockPostRepository,
-      })
+      .useValue(pointRepo)
       .overrideProvider(getRepositoryToken(Coupon))
-      .useFactory({
-        factory: mockPostRepository,
-      })
+      .useValue(couponRepo)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -49,12 +44,14 @@ describe('AppController (e2e)', () => {
       //request Dto를 사용하는 부분 깔끔하게 코드정리 할 필요가 있음
       const requestDto = new FindUserByNameRequest();
       const name = faker.lorem.word();
+
       requestDto.name = name;
       const user = User.of({
         id: faker.datatype.number(),
         name: name,
       });
       userRepo.findOne.mockReturnValue(user);
+
       return request(app.getHttpServer())
         .get('/user')
         .query(requestDto)
