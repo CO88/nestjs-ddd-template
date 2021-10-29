@@ -20,6 +20,9 @@ export class Clothes {
   @Column()
   brandId: number;
 
+  @Column({ default: 1 })
+  stock: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

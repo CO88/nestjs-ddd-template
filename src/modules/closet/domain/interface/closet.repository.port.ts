@@ -1,5 +1,5 @@
-import { Closet } from '../../database/entities/closet.entity';
+import { Clothes } from '../../database/entities/clothes.entity';
 
-export interface ClosetRepositoryPort {
-  findOneByOrThrow(id: number): Promise<Closet>;
+export interface ClothesRepositoryPort {
+  findOneByOrThrow(id: number): Promise<Clothes>;
 }

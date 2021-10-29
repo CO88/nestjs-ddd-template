@@ -1,13 +1,13 @@
 import { NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { ClosetRepositoryPort } from '../../domain/interface/closet.repository.port';
-import { Closet } from '../entities/closet.entity';
+import { ClothesRepositoryPort } from '../../domain/interface/closet.repository.port';
+import { Clothes } from '../entities/clothes.entity';
 
-export class ClosetRepository
-  extends Repository<Closet>
-  implements ClosetRepositoryPort
+export class ClothesRepository
+  extends Repository<Clothes>
+  implements ClothesRepositoryPort
 {
-  async findOneByOrThrow(id: number): Promise<Closet> {
+  async findOneByOrThrow(id: number): Promise<Clothes> {
     const found = await this.findOne(id);
     if (!found) {
       throw new NotFoundException();

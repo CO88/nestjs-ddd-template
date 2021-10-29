@@ -7,4 +7,4 @@
  * RepositoryPort는 domain layer에 속하기 때문입니다.
  *
  */
-export class Closet {}
+export class ClothesEntity {}
