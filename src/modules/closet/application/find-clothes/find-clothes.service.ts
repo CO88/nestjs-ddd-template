@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ClothesRepository } from '../../database/repository/closet.repository';
+import { ClothesRepository } from '../../database/repository/clothes.repository';
 import { ClothesEntity } from '../../domain/entities/clothes.entity';
 import { ClothesRepositoryPort } from '../../domain/interface/closet.repository.port';
 
