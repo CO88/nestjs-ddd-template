@@ -1,10 +1,43 @@
-/**
- * 도메인 엔티티입니다.
- * 아직 더 조사해봐야겠지만,
- * 여기서 repository port를 받아 도메인 로직을 수행합니다.
- * ex) setRepository(repository: RepositoryPort)이런 식으로
- * 인터페이스를 받게되면 infrastructure layer에 repository에 의존되지 않습니다.
- * RepositoryPort는 domain layer에 속하기 때문입니다.
- *
- */
-export class ClothesEntity {}
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Brand } from './brand.entity';
+import { Category } from './category.entity';
+
+@Entity('clothes')
+export class Clothes {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  name: string;
+
+  @Column({ name: 'category_id' })
+  categoryId: number;
+
+  @Column({ name: 'brand_id' })
+  brandId: number;
+
+  @Column({ default: 1 })
+  stock: number;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
+
+  @OneToOne(() => Brand, (brand) => brand.clothes)
+  @JoinColumn({ name: 'brand_id' })
+  brand: Brand;
+
+  @OneToOne(() => Category, (category) => category.clothes)
+  @JoinColumn({ name: 'category_id' })
+  category: Category;
+}

@@ -1,5 +1,7 @@
-import { Clothes } from '../../database/entities/clothes.entity';
+import { Clothes } from '../entities/clothes.entity';
+import { FindClothes } from './find-clothes.interface';
 
 export interface ClothesRepositoryPort {
   findOneByOrThrow(id: number): Promise<Clothes>;
+  findManyOrThrow(findClothes: FindClothes): Promise<Clothes[]>;
 }
