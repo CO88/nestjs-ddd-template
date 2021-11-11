@@ -27,4 +27,8 @@ export class ClothesRepository extends Repository<Clothes> implements ClothesRep
 
     return found;
   }
+
+  async saveInTransaction(entity: Partial<Clothes>): Promise<void> {
+    await this.save(entity, { transaction: false, reload: false });
+  }
 }
