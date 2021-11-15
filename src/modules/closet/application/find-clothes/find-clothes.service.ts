@@ -14,7 +14,6 @@ export class FindClothesService {
   // 컨트롤러에서 받은 request dto를 도메인 layer에 관련된 것으로 변화해야합니다.
   async find(findClothes: FindClothes): Promise<Clothes[]> {
     const clothes = await this.closetRepository.findManyOrThrow(findClothes);
-
     return clothes;
   }
 }

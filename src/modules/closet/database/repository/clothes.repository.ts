@@ -16,14 +16,23 @@ export class ClothesRepository extends Repository<Clothes> implements ClothesRep
   }
 
   async findManyOrThrow(findClothes: FindClothes): Promise<Clothes[]> {
-    const found = await this.find({
-      where: {
-        name: findClothes.name,
-        brand: { name: findClothes.brand },
-        category: { name: findClothes.category },
-      },
-      relations: ['brand', 'category'],
-    });
+    const query = await this.createQueryBuilder('clothes')
+      .innerJoinAndSelect('clothes.brand', 'brand')
+      .innerJoinAndSelect('clothes.category', 'category');
+
+    if (findClothes.brand) {
+      query.andWhere('brand.name = :brand', { brand: findClothes.brand });
+    }
+
+    if (findClothes.category) {
+      query.andWhere('category.name = :category', { category: findClothes.category });
+    }
+
+    if (findClothes.name) {
+      query.andWhere('clothes.name = :name', { name: findClothes.name });
+    }
+
+    const found = query.getMany();
 
     return found;
   }
