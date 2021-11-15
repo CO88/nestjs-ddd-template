@@ -3,6 +3,7 @@ version: "3.7"
 services:
   mariadb:
     image: mariadb:10.4.8
+    command: --innodb-flush-method=O_DSYNC --innodb-use-native-aio=0 --log_bin=ON
     ports:
       - 3306:3306
     environment:
@@ -11,10 +12,14 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
     volumes:
-      - mariadb:/var/lib/mysql
+      - mariadb_volumes:/var/lib/mysql
     networks: 
       - default
 
 volumes:
-  mariadb:
-
+  mariadb_volumes:
+    driver: local
+    driver_opts: 
+      type: nfs
+      device: ${APP_DIR}
+      o: bind
