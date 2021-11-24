@@ -1,15 +1,15 @@
 import { IsOptional, IsString } from 'class-validator';
 
 export class FindClothesRequest {
-  @IsOptional()
   @IsString()
+  @IsOptional()
   name?: string;
 
-  @IsOptional()
   @IsString()
+  @IsOptional()
   brand?: string;
 
-  @IsOptional()
   @IsString()
+  @IsOptional()
   category?: string;
 }
