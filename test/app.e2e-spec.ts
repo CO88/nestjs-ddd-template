@@ -8,7 +8,7 @@ import { FindUserByNameRequest } from './../src/modules/user/dto/user.request.dt
 import { UserModule } from './../src/modules/user/user.module';
 import { Point } from './../src/modules/user/domain/entities/point.entity';
 import { Coupon } from './../src/modules/user/domain/entities/coupon.entity';
-import { mockPostRepository } from './../src/util/test.util';
+import { mockPostRepository } from '../src/common/utils/test.util';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -52,10 +52,7 @@ describe('AppController (e2e)', () => {
       });
       userRepo.findOne.mockReturnValue(user);
 
-      return request(app.getHttpServer())
-        .get('/user')
-        .query(requestDto)
-        .expect(200);
+      return request(app.getHttpServer()).get('/user').query(requestDto).expect(200);
     });
   });
 });

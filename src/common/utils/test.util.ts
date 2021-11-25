@@ -7,6 +7,4 @@ export const mockPostRepository = () => ({
   softDelete: jest.fn(),
 });
 
-export type MockRepository<T = any> = Partial<
-  Record<keyof Repository<T>, jest.Mock>
->;
+export type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
