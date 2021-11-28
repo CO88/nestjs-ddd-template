@@ -13,25 +13,24 @@ export class CreateClothesService {
   async create(createClothes: CreateClothes): Promise<boolean> {
     const transactionId: string = randomUUID();
 
-    await this.unitOfWork.start(transactionId);
+    await this.unitOfWork.excute(transactionId, async () => {
+      const clothesRepository: ClothesRepositoryPort =
+        this.unitOfWork.getClothesRepository(transactionId);
 
-    const clothesRepository: ClothesRepositoryPort =
-      this.unitOfWork.getClothesRepository(transactionId);
+      const brandRepository: BrandRepositoryPort =
+        this.unitOfWork.getBrandRepository(transactionId);
 
-    const brandRepository: BrandRepositoryPort = this.unitOfWork.getBrandRepository(transactionId);
+      const categoryRepository: CategoryRepositoryPort =
+        this.unitOfWork.getCategoryRepository(transactionId);
 
-    const categoryRepository: CategoryRepositoryPort =
-      this.unitOfWork.getCategoryRepository(transactionId);
-
-    const category = await categoryRepository.findOneOrCreateByName(createClothes.category);
-    const brand = await brandRepository.findOneOrCreateByName(createClothes.brand);
-    await clothesRepository.saveInTransaction({
-      name: createClothes.name,
-      category: category,
-      brand: brand,
+      const category = await categoryRepository.findOneOrCreateByName(createClothes.category);
+      const brand = await brandRepository.findOneOrCreateByName(createClothes.brand);
+      await clothesRepository.saveInTransaction({
+        name: createClothes.name,
+        category: category,
+        brand: brand,
+      });
     });
-
-    await this.unitOfWork.commit(transactionId);
 
     return true;
   }

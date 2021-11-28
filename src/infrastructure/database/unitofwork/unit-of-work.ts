@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { TypeOrmUnitOfWork } from 'src/common/ddd/infrastruture/typeorm-unit-of-work';
+import { TypeOrmUnitOfWork } from 'src/common/ddd/infrastruture/database/typeorm-unit-of-work';
 import { BrandRepository } from 'src/modules/closet/database/repository/brand.repository';
 import { CategoryRepository } from 'src/modules/closet/database/repository/category.repository';
 import { ClothesRepository } from 'src/modules/closet/database/repository/clothes.repository';
