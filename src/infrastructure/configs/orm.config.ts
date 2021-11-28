@@ -9,4 +9,7 @@ export const typeormConfig: TypeOrmModuleOptions = {
   database: process.env.DB_NAME,
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
+  autoLoadEntities: true,
+  logging: true,
+  // logging: ['error'],
 };

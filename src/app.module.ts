@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { appConfig } from './config/app.config';
+import { typeormConfig } from './infrastructure/configs/orm.config';
+import { UnitOfWorkModule } from './infrastructure/database/unitofwork/unit-of-work.module';
 import { ClothesModule } from './modules/closet/clothes.module';
-import { entities } from './modules/closet/domain/entities';
 
 @Module({
   imports: [
@@ -11,17 +12,8 @@ import { entities } from './modules/closet/domain/entities';
       isGlobal: false,
       load: [appConfig],
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (config: ConfigService) => {
-        return {
-          ...config.get('database'),
-          entities: [...entities],
-          logging: true,
-        };
-      },
-      inject: [ConfigService],
-    }),
+    TypeOrmModule.forRoot(typeormConfig),
+    UnitOfWorkModule,
     ClothesModule,
   ],
   controllers: [],
