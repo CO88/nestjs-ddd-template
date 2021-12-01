@@ -3,9 +3,14 @@ import { EntityRepository, Repository } from 'typeorm';
 import { ClothesRepositoryPort } from '../../domain/interface/closet.repository.port';
 import { Clothes } from '../../domain/entities/clothes.entity';
 import { FindClothes } from '../../domain/interface/find-clothes.interface';
+import { BrandRepository } from './brand.repository';
+import { CategoryRepository } from './category.repository';
 
 @EntityRepository(Clothes)
 export class ClothesRepository extends Repository<Clothes> implements ClothesRepositoryPort {
+  private brandRepository: BrandRepository;
+  private categoryRepository: CategoryRepository;
+
   async findOneByOrThrow(id: number): Promise<Clothes> {
     const found = await this.findOne(id);
     if (!found) {
@@ -39,5 +44,15 @@ export class ClothesRepository extends Repository<Clothes> implements ClothesRep
 
   async saveInTransaction(entity: Partial<Clothes>): Promise<void> {
     await this.save(entity, { transaction: false, reload: false });
+  }
+
+  async createClothes(name: string, categoryName: string, brandName: string): Promise<void> {
+    this.brandRepository = this.manager.getCustomRepository(BrandRepository);
+    this.categoryRepository = this.manager.getCustomRepository(CategoryRepository);
+
+    const brand = await this.brandRepository.findOneOrCreateByName(brandName);
+    const category = await this.categoryRepository.findOneOrCreateByName(categoryName);
+
+    await this.saveInTransaction({ name: name, brand: brand, category: category });
   }
 }
