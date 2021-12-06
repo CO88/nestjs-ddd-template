@@ -46,13 +46,17 @@ export class ClothesRepository extends Repository<Clothes> implements ClothesRep
     await this.save(entity, { transaction: false, reload: false });
   }
 
+  // 참조 : https://github.com/nestjs/typeorm/issues/98
   async createClothes(name: string, categoryName: string, brandName: string): Promise<void> {
-    this.brandRepository = this.manager.getCustomRepository(BrandRepository);
-    this.categoryRepository = this.manager.getCustomRepository(CategoryRepository);
-
     const brand = await this.brandRepository.findOneOrCreateByName(brandName);
     const category = await this.categoryRepository.findOneOrCreateByName(categoryName);
 
     await this.saveInTransaction({ name: name, brand: brand, category: category });
+  }
+
+  setRelatedRepository(): this {
+    this.brandRepository = this.manager.getCustomRepository(BrandRepository);
+    this.categoryRepository = this.manager.getCustomRepository(CategoryRepository);
+    return this;
   }
 }

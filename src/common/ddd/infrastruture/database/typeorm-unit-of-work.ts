@@ -15,6 +15,7 @@ export class TypeOrmUnitOfWork {
   }
 
   getEntityManager(transanctionUuid: string): EntityManager {
+    this.logger.debug('[Get entity manager]', transanctionUuid);
     return this.queryRunners.get(transanctionUuid).manager;
   }
 

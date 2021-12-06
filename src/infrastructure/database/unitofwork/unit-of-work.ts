@@ -15,6 +15,8 @@ export class UnitOfWork extends TypeOrmUnitOfWork {
   }
 
   getClothesRepository(transactionId: string): ClothesRepository {
-    return this.getEntityManager(transactionId).getCustomRepository(ClothesRepository);
+    return this.getEntityManager(transactionId)
+      .getCustomRepository(ClothesRepository)
+      .setRelatedRepository();
   }
 }
